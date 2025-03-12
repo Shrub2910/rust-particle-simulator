@@ -1,1 +1,32 @@
-/target
+# Ignore the target directory where compiled binaries are stored
+/target/
+
+# Ignore Rust-specific files
+**/*.rs.bk
+**/*.rs.swp
+
+# Ignore dependency and build-related files
+/.cargo/
+**/Cargo.lock
+**/Cargo.toml.orig
+
+# Ignore build artifacts from IDEs/editors
+/.idea/
+/.vscode/
+/*.iml
+
+# Ignore MacOS system files
+.DS_Store
+
+# Ignore Windows system files
+Thumbs.db
+desktop.ini
+
+# Ignore Linux swap files
+*.swp
+*.swo
+
+# Ignore temporary files
+*.log
+*.tmp
+*.bak
