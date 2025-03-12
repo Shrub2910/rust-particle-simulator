@@ -19,8 +19,9 @@ fn main() {
     while !rl.window_should_close() {
         let delta_time: f32 = rl.get_frame_time();
 
-        if rl.is_key_pressed(KeyboardKey::KEY_W) {
-            let new_particle: Particle = Particle::new(Vector2 { x: 200.0, y: 200.0 }, 10.0, Color::RED, 1.0);
+        if rl.is_mouse_button_pressed(MouseButton::MOUSE_BUTTON_LEFT) {
+            let mouse_position: Vector2 = rl.get_mouse_position();
+            let new_particle: Particle = Particle::new(mouse_position, 10.0, Color::RED, 1.0);
             particles.push(new_particle);
         }
 
