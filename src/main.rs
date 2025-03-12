@@ -1,5 +1,5 @@
 use particle::Particle;
-use physics::{apply_constraint, apply_gravity, update_positions};
+use physics::{apply_constraint, apply_gravity, solve_collisions, update_positions};
 use draw::{draw_constraint, draw_particles};
 use raylib::prelude::*;
 mod particle;
@@ -28,12 +28,14 @@ fn main() {
         let mut d = rl.begin_drawing(&thread);
         d.clear_background(Color::WHITE);
 
-        apply_gravity(&mut particles);
-        apply_constraint(&mut particles, Vector2 { x: 400.0, y: 300.0 }, 300.0);
-        update_positions(&mut particles, delta_time);
+        for _ in 0..8{
+            apply_gravity(&mut particles);
+            apply_constraint(&mut particles, Vector2 { x: 400.0, y: 300.0 }, 300.0);
+            solve_collisions(&mut particles);
+            update_positions(&mut particles, delta_time / 8.0);
+        }
 
         draw_particles(&mut particles, &mut d);
         draw_constraint(Vector2 { x: 400.0, y: 300.0 }, 300.0, Color::RED, &mut d);
-        
     } 
 }
