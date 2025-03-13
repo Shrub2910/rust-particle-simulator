@@ -8,6 +8,13 @@ pub fn apply_gravity(particles: &mut Vec<Particle>){
     }
 }
 
+pub fn apply_mouse_gravity(particles: &mut Vec<Particle>, mouse_position: Vector2) {
+    for particle in particles{
+        let direction: Vector2 = (mouse_position - particle.get_position()).normalized();
+        particle.apply_force(direction * 1000.0);
+    }
+}
+
 pub fn apply_constraint(particles: &mut Vec<Particle>, position: Vector2, radius: f32) {
     for particle in particles{
         let distance: Vector2 = particle.get_position() - position;

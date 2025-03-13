@@ -36,7 +36,7 @@ impl Particle {
     }
 
     pub fn apply_force(&mut self, force: Vector2) {
-        self.force = force;
+        self.force += force;
     }
 
     pub fn draw(&self, d: &mut RaylibDrawHandle) {
