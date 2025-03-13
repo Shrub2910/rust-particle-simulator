@@ -25,7 +25,7 @@ fn main() {
 
 
         if rl.is_mouse_button_pressed(MouseButton::MOUSE_BUTTON_LEFT) && ball_create_mode {
-            let new_particle: Particle = Particle::new(mouse_position, 10.0, Color::RED, 1.0);
+            let new_particle: Particle = Particle::new(mouse_position, 10.0, Color::color_from_hsv(rl.get_random_value::<i32>(0..255) as f32, 1.0, 1.0), 1.0);
             particles.push(new_particle);
         }
 
@@ -64,7 +64,8 @@ fn main() {
 
         d.draw_text(&text, 0, 0, 32, Color::BLACK);
 
-        draw_particles(&mut particles, &mut d);
         draw_constraint(Vector2 { x: 400.0, y: 300.0 }, 300.0, Color::RED, &mut d);
+        draw_particles(&mut particles, &mut d);
+
     } 
 }

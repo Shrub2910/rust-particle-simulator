@@ -20,8 +20,13 @@ pub fn apply_constraint(particles: &mut Vec<Particle>, position: Vector2, radius
         let distance: Vector2 = particle.get_position() - position;
 
         if (distance).length() > radius - particle.get_radius() {
+            let velocity: f32 = particle.get_velocity();
             let direction: Vector2 = distance.normalized();
-            particle.set_position(position + direction * (radius - particle.get_radius()));
+            
+            let new_position: Vector2 = position + direction * (radius - particle.get_radius());
+            particle.set_position(new_position);
+            particle.set_previous_position(new_position + direction * velocity);
+
         }
     }
 }
@@ -45,8 +50,21 @@ pub fn solve_collisions(particles: &mut Vec<Particle>){
 
             if distance_length < size_total {
                 let delta = size_total - distance_length;
-                particles[i].set_position(particle1_position + direction * 0.5 * delta);
-                particles[j].set_position(particle2_position - direction * 0.5 * delta);
+
+                let new_particle1_position: Vector2 = particle1_position + direction * 0.5 * delta;
+                let new_particle2_position: Vector2 = particle2_position - direction * 0.5 * delta;
+
+                let particle1_velocity = particles[i].get_velocity();
+                let particle2_velocity = particles[j].get_velocity();
+
+                let new_velocity = (particle1_velocity + particle2_velocity) * 0.5;
+
+                particles[i].set_previous_position(new_particle1_position - direction * new_velocity);
+                particles[j].set_previous_position(new_particle2_position + direction * new_velocity);
+
+                particles[i].set_position(new_particle1_position);
+                particles[j].set_position(new_particle2_position);
+
             }
         }
     }

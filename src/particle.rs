@@ -54,6 +54,18 @@ impl Particle {
         self.position_current = new_position;
     }
 
+    pub fn get_previous_position(&self) -> Vector2 {
+        self.position_old
+    }
+
+    pub fn set_previous_position(&mut self, new_position: Vector2) {
+        self.position_old = new_position;
+    }
+
+    pub fn get_velocity(&self) -> f32 {
+        (self.position_current - self.position_old).length()
+    }
+
     pub fn get_radius(&self) -> f32 {
         self.radius
     }
