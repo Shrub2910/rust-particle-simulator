@@ -1,3 +1,5 @@
+
+
 use particle::Particle;
 use physics::{apply_constraint, apply_gravity, apply_mouse_gravity, solve_collisions, update_positions};
 use draw::{draw_constraint, draw_particles};
@@ -20,12 +22,13 @@ fn main() {
     let mut mouse_gravity: bool = false;
 
     while !rl.window_should_close() {
-        let delta_time: f32 = rl.get_frame_time();
         let mouse_position: Vector2 = rl.get_mouse_position();
 
 
         if rl.is_mouse_button_pressed(MouseButton::MOUSE_BUTTON_LEFT) && ball_create_mode {
-            let new_particle: Particle = Particle::new(mouse_position, 10.0, Color::color_from_hsv(rl.get_random_value::<i32>(0..255) as f32, 1.0, 1.0), 1.0);
+            let random_number:f32 = rl.get_random_value::<i32>(10..70) as f32;
+            let new_particle: Particle = Particle::new(mouse_position, random_number, Color::color_from_hsv(rl.get_random_value::<i32>(0..255) as f32, 1.0, 1.0), random_number * random_number/100.0);
+            
             particles.push(new_particle);
         }
 
@@ -57,7 +60,7 @@ fn main() {
 
             apply_constraint(&mut particles, Vector2 { x: 400.0, y: 300.0 }, 300.0);
             solve_collisions(&mut particles);
-            update_positions(&mut particles, delta_time / 8.0);
+            update_positions(&mut particles, 0.0167 / 8.0);
         }
 
         let text: String = format!("Number of particles: {}", particles.len());

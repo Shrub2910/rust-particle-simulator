@@ -4,7 +4,7 @@ use crate::particle::Particle;
 
 pub fn apply_gravity(particles: &mut Vec<Particle>){
     for particle in particles{
-        particle.apply_force(Vector2 { x: 0.0, y: 1000.0 });
+        particle.apply_force(Vector2 { x: 0.0, y: 1000.0 * particle.get_mass() });
     }
 }
 
@@ -20,12 +20,12 @@ pub fn apply_constraint(particles: &mut Vec<Particle>, position: Vector2, radius
         let distance: Vector2 = particle.get_position() - position;
 
         if (distance).length() > radius - particle.get_radius() {
-            let velocity: f32 = particle.get_velocity();
+            let velocity: f32 = particle.get_velocity().length();
             let direction: Vector2 = distance.normalized();
             
             let new_position: Vector2 = position + direction * (radius - particle.get_radius());
             particle.set_position(new_position);
-            particle.set_previous_position(new_position + direction * velocity);
+            particle.set_previous_position(new_position + direction * velocity * 0.8);
 
         }
     }
@@ -57,10 +57,24 @@ pub fn solve_collisions(particles: &mut Vec<Particle>){
                 let particle1_velocity = particles[i].get_velocity();
                 let particle2_velocity = particles[j].get_velocity();
 
-                let new_velocity = (particle1_velocity + particle2_velocity) * 0.5;
+                let particle1_mass = particles[i].get_mass();
+                let particle2_mass = particles[j].get_mass();
 
-                particles[i].set_previous_position(new_particle1_position - direction * new_velocity);
-                particles[j].set_previous_position(new_particle2_position + direction * new_velocity);
+
+                // Compute relative velocity along the normal direction
+                let relative_velocity = (particle2_velocity - particle1_velocity).dot(direction);
+
+                // Calculate impulse based on restitution and mass
+                let impulse = (1.0 + 0.5) * relative_velocity / (particle1_mass + particle2_mass);
+
+                // Calculate the new velocities
+                let new_particle1_velocity = particle1_velocity + direction * impulse * particle2_mass;
+                let new_particle2_velocity = particle2_velocity - direction * impulse * particle1_mass;
+
+
+
+                particles[i].set_previous_position(new_particle1_position - new_particle1_velocity);
+                particles[j].set_previous_position(new_particle2_position - new_particle2_velocity);
 
                 particles[i].set_position(new_particle1_position);
                 particles[j].set_position(new_particle2_position);
