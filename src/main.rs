@@ -1,12 +1,15 @@
 
 
 use particle::Particle;
-use physics::{apply_constraint, apply_gravity, apply_mouse_gravity, solve_collisions, update_positions};
+use physics::{apply_constraint, apply_gravity, apply_mouse_gravity, get_total_kinetic_energy, solve_collisions, update_positions};
 use draw::{draw_constraint, draw_particles};
 use raylib::prelude::*;
 mod particle;
 mod physics;
 mod draw;
+
+const COF: f32 = 0.999;
+const PERIMETER_BOUNCE: f32 = 0.999;
 
 fn main() {
     let (mut rl, thread) = raylib::init()
@@ -21,15 +24,24 @@ fn main() {
     let mut ball_create_mode: bool = true;
     let mut mouse_gravity: bool = false;
 
+    let mut gravity_enabled: bool = false;
+    let mut collisions_enabled: bool = true;
+
     while !rl.window_should_close() {
         let mouse_position: Vector2 = rl.get_mouse_position();
 
 
         if rl.is_mouse_button_pressed(MouseButton::MOUSE_BUTTON_LEFT) && ball_create_mode {
-            let random_number:f32 = rl.get_random_value::<i32>(10..70) as f32;
+            let random_number:f32 = rl.get_random_value::<i32>(5..20) as f32;
             let new_particle: Particle = Particle::new(mouse_position, random_number, Color::color_from_hsv(rl.get_random_value::<i32>(0..255) as f32, 1.0, 1.0), random_number * random_number/100.0);
             
             particles.push(new_particle);
+        }
+
+        if rl.is_key_pressed(KeyboardKey::KEY_BACKSPACE) && ball_create_mode {
+            if particles.len() != 0{
+                particles.pop();
+            }
         }
 
         if rl.is_mouse_button_pressed(MouseButton::MOUSE_BUTTON_LEFT){
@@ -48,6 +60,14 @@ fn main() {
             ball_create_mode = !ball_create_mode;
         }
 
+        if rl.is_key_pressed(KeyboardKey::KEY_G) {
+            gravity_enabled = !gravity_enabled;
+        }
+
+        if rl.is_key_pressed(KeyboardKey::KEY_C) {
+            collisions_enabled = !collisions_enabled;
+        }
+
         let mut d = rl.begin_drawing(&thread);
         d.clear_background(Color::WHITE);
 
@@ -55,17 +75,25 @@ fn main() {
             if !ball_create_mode && mouse_gravity{
                 apply_mouse_gravity(&mut particles, mouse_position);
             } else{
-                apply_gravity(&mut particles);
+                if gravity_enabled {
+                    apply_gravity(&mut particles);
+                }
             }
 
             apply_constraint(&mut particles, Vector2 { x: 400.0, y: 300.0 }, 300.0);
-            solve_collisions(&mut particles);
+
+            if collisions_enabled {
+                solve_collisions(&mut particles);
+            }
+
             update_positions(&mut particles, 0.0167 / 8.0);
         }
 
         let text: String = format!("Number of particles: {}", particles.len());
+        let kinetic_energy_text: String = format!("Total kinetic energy: {}", get_total_kinetic_energy(&mut particles));
 
-        d.draw_text(&text, 0, 0, 32, Color::BLACK);
+        d.draw_text(&text, 0, 0, 16, Color::BLACK);
+        d.draw_text(&kinetic_energy_text, 0, 20, 16, Color::BLACK);
 
         draw_constraint(Vector2 { x: 400.0, y: 300.0 }, 300.0, Color::RED, &mut d);
         draw_particles(&mut particles, &mut d);

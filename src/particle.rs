@@ -1,6 +1,5 @@
 use raylib::prelude::*;
 
-
 pub struct Particle {
     position_current: Vector2,
     position_old: Vector2,
