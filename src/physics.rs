@@ -1,6 +1,6 @@
 use raylib::prelude::*;
 
-use crate::{particle::Particle, COF, PERIMETER_BOUNCE};
+use crate::{particle::Particle, COF, FRICTION, PERIMETER_BOUNCE};
 
 pub fn apply_gravity(particles: &mut Vec<Particle>){
     for particle in particles{
@@ -25,10 +25,12 @@ pub fn apply_constraint(particles: &mut Vec<Particle>, position: Vector2, radius
             
             let new_position: Vector2 = position + direction * (radius - particle.get_radius());
 
-            let new_velocity: Vector2 = velocity - (direction * (velocity.dot(direction)) * 2.0);
+            let mut new_velocity: Vector2 = velocity - (direction * (velocity.dot(direction)) * 2.0) * PERIMETER_BOUNCE;
+
+            new_velocity *= FRICTION;
 
             particle.set_position(new_position);
-            particle.set_previous_position(new_position - new_velocity * PERIMETER_BOUNCE);
+            particle.set_previous_position(new_position - new_velocity);
 
         }
     }

@@ -8,8 +8,9 @@ mod particle;
 mod physics;
 mod draw;
 
-const COF: f32 = 1.0;
-const PERIMETER_BOUNCE: f32 = 1.0;
+const COF: f32 = 0.9;
+const PERIMETER_BOUNCE: f32 = 0.9;
+const FRICTION: f32 = 0.999;
 
 fn main() {
     let (mut rl, thread) = raylib::init()
