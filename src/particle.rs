@@ -22,6 +22,8 @@ impl Particle {
         }
     }
 
+    // Velocity verlet
+    // Simple but also stable with enough substeps
     pub fn update_position(&mut self, dt: f32) {
         let velocity: Vector2 = self.position_current - self.position_old;
 

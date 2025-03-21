@@ -8,9 +8,9 @@ mod particle;
 mod physics;
 mod draw;
 
-const COF: f32 = 0.9;
-const PERIMETER_BOUNCE: f32 = 0.9;
-const FRICTION: f32 = 0.999;
+const COF: f32 = 1.0;
+const PERIMETER_BOUNCE: f32 = 1.0;
+const FRICTION: f32 = 1.0;
 
 fn main() {
     let (mut rl, thread) = raylib::init()
@@ -33,7 +33,7 @@ fn main() {
 
 
         if rl.is_mouse_button_pressed(MouseButton::MOUSE_BUTTON_LEFT) && ball_create_mode {
-            let random_number:f32 = rl.get_random_value::<i32>(5..20) as f32;
+            let random_number:f32 = rl.get_random_value::<i32>(5..50) as f32;
             let new_particle: Particle = Particle::new(mouse_position, random_number, Color::color_from_hsv(rl.get_random_value::<i32>(0..255) as f32, 1.0, 1.0), random_number * random_number/100.0);
             
             particles.push(new_particle);

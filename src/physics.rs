@@ -4,11 +4,14 @@ use crate::{particle::Particle, COF, FRICTION, PERIMETER_BOUNCE};
 
 pub fn apply_gravity(particles: &mut Vec<Particle>){
     for particle in particles{
+        // Simple weight = mg
         particle.apply_force(Vector2 { x: 0.0, y: 1000.0 * particle.get_mass() });
     }
 }
 
 pub fn apply_mouse_gravity(particles: &mut Vec<Particle>, mouse_position: Vector2) {
+    // Doesn't actually apply gravity as it doesn't multiply by mass
+    // Useful for showcasing how bigger masses are affected less by a force
     for particle in particles{
         let direction: Vector2 = (mouse_position - particle.get_position()).normalized();
         particle.apply_force(direction * 5000.0);
@@ -25,11 +28,15 @@ pub fn apply_constraint(particles: &mut Vec<Particle>, position: Vector2, radius
             
             let new_position: Vector2 = position + direction * (radius - particle.get_radius());
 
+            // Perimeter bounce controls the elasticity of the collision between the particle and the perimter
             let mut new_velocity: Vector2 = velocity - (direction * (velocity.dot(direction)) * 2.0) * PERIMETER_BOUNCE;
 
+            // Stops the particle from sliding indefinetly
             new_velocity *= FRICTION;
 
             particle.set_position(new_position);
+
+            // Applies the velocity by setting the previous position as the negative of the velocity
             particle.set_previous_position(new_position - new_velocity);
 
         }
@@ -37,9 +44,14 @@ pub fn apply_constraint(particles: &mut Vec<Particle>, position: Vector2, radius
 }
 
 pub fn solve_collisions(particles: &mut Vec<Particle>){
+
+    // Brute force method for checking collisions: O(n^2)
+    // I will probably improve this later with either spatial hashing or quadtrees
     for i in 0..particles.len(){
         for j in 0..particles.len(){
 
+            // Makes sure that it doesn't check for a collision with itself
+            // Might not neccessary since if the magnitude is 0 it won't do anything anyway 
             if i == j{
                 continue;
             }
@@ -80,7 +92,7 @@ pub fn solve_collisions(particles: &mut Vec<Particle>){
                 let new_particle2_velocity: Vector2 = particle2_velocity - direction * impulse * particle1_mass;
 
 
-
+                // Applying the velocities by setting the previous position as negative the velocity
                 particles[i].set_previous_position(new_particle1_position - new_particle1_velocity);
                 particles[j].set_previous_position(new_particle2_position - new_particle2_velocity);
 
@@ -92,12 +104,16 @@ pub fn solve_collisions(particles: &mut Vec<Particle>){
     }
 }
 
+// Performs the velocity verlet calculations to change the particle's position
 pub fn update_positions(particles: &mut Vec<Particle>, delta_time: f32) {
     for particle in particles{
         particle.update_position(delta_time);
     }
 }
 
+// K = 1/2 * m * v^2
+// Adds them all together to be printed
+// Useful for checking collisions are perfectly elastic when elasticity is at 1.0
 pub fn get_total_kinetic_energy(particles: &mut Vec<Particle>) -> f32{
     let mut kinetic_energy: f32 = 0.0;
     for particle in particles {
