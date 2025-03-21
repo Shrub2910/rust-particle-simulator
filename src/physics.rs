@@ -20,12 +20,15 @@ pub fn apply_constraint(particles: &mut Vec<Particle>, position: Vector2, radius
         let distance: Vector2 = particle.get_position() - position;
 
         if (distance).length() > radius - particle.get_radius() {
-            let velocity: f32 = particle.get_velocity().length();
+            let velocity: Vector2 = particle.get_velocity();
             let direction: Vector2 = distance.normalized();
             
             let new_position: Vector2 = position + direction * (radius - particle.get_radius());
+
+            let new_velocity: Vector2 = velocity - (direction * (velocity.dot(direction)) * 2.0);
+
             particle.set_position(new_position);
-            particle.set_previous_position(new_position + direction * velocity * PERIMETER_BOUNCE);
+            particle.set_previous_position(new_position - new_velocity * PERIMETER_BOUNCE);
 
         }
     }
