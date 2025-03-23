@@ -29,7 +29,7 @@ pub fn apply_constraint(particles: &mut Vec<Particle>, position: Vector2, radius
             let new_position: Vector2 = position + direction * (radius - particle.get_radius());
 
             // Perimeter bounce controls the elasticity of the collision between the particle and the perimter
-            let mut new_velocity: Vector2 = velocity - (direction * (velocity.dot(direction)) * 2.0) * PERIMETER_BOUNCE;
+            let mut new_velocity: Vector2 = velocity - (direction * (velocity.dot(direction)).max(0.0) * 2.0) * PERIMETER_BOUNCE;
 
             // Stops the particle from sliding indefinetly
             new_velocity *= FRICTION;
@@ -85,7 +85,7 @@ pub fn solve_collisions(particles: &mut Vec<Particle>){
                 let relative_velocity: f32 = (particle2_velocity - particle1_velocity).dot(direction);
 
                 // Calculate impulse based on restitution and mass
-                let impulse: f32 = (1.0 + COF) * relative_velocity / (particle1_mass + particle2_mass);
+                let impulse: f32 = (1.0 + COF) * relative_velocity / (particle1_mass + particle2_mass).max(0.0);
 
                 // Calculate the new velocities
                 let new_particle1_velocity: Vector2 = particle1_velocity + direction * impulse * particle2_mass;
